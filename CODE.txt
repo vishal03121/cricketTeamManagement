@@ -1,0 +1,1846 @@
+//#include<bits/stdc++.h>
+typedef long int l;
+#include<iostream>
+#include<iomanip>
+#include<stdlib.h>
+#include<vector>
+#include<iterator>
+#include<algorithm>
+#include<cmath>
+#include<string>
+#include<limits>
+#include<fstream>
+using namespace std;
+string space2underscore(string text);
+string underscores2space(string text);
+class tournament
+{
+public:
+	static int cont;
+	vector<l> team_id_1; //to store first opponent id
+	vector<l> team_id_2; //to store second opponent id
+	vector<string> date; //to store date of match
+	vector<int> time; //to sstore time of match
+	tournament()
+	{
+		team_id_1.erase(team_id_1.begin(), team_id_1.end());
+		team_id_2.erase(team_id_2.begin(), team_id_2.end());
+		date.erase(date.begin(), date.end());
+		time.erase(time.begin(), time.end());
+	}
+	//void displayschedule();
+	void deletematch(int x);
+	void deletem(int x);
+	void saverecord();
+	void eraseifteamd(l k);
+	void emptyschedule()
+	{
+		team_id_1.erase(team_id_1.begin(), team_id_1.end());
+		team_id_2.erase(team_id_2.begin(), team_id_2.end());
+		date.erase(date.begin(), date.end());
+		time.erase(time.begin(), time.end());
+		cont++;
+	}
+}; int tournament::cont = 0;
+class Node
+{
+	string team_name;
+	string owner;
+	long double price;
+	vector<string> franchise;
+	vector<string> team_players;
+	int score;
+public:
+	l key;                                                                                 //team id
+	Node* next;
+	Node()
+	{
+		key = 0;
+		team_name.erase(team_name.begin(), team_name.end());
+		owner.erase(owner.begin(), owner.end());
+		price = 0.0;
+		score = 0;
+		next = NULL;
+	}
+	Node(l k, string tn, string o, long double p, vector<string> f, vector<string> tp, int s)
+	{
+		key = k;
+		owner = o;
+		price = p;
+		franchise.erase(franchise.begin(), franchise.end());
+		franchise = f;
+		team_players.erase(team_players.begin(), team_players.end());
+		team_players = tp;
+		score = s;
+	}
+	void set_owner(string o) { owner = o; }
+	void set_team_name(string n) { team_name = n; }
+	void set_price(long double p) { price = p; }
+	void set_fran(vector<string> f) { franchise.erase(franchise.begin(), franchise.end()); franchise = f; }
+	void set_tp(vector<string> t) { team_players.erase(team_players.begin(), team_players.end()); team_players = t; }
+	void set_score(int s) { score += s; }
+
+	string get_owner() { return owner; }
+	string get_team_name() { return team_name; }
+	long double get_price() { return price; }
+	int get_score() { return score; }
+	vector<string> get_fran() { return franchise; }
+	vector<string> get_tp() { return team_players; }
+	~Node() { delete next; }
+};
+class SinglyLinkedList
+{
+public:
+	Node* head;
+	static int count1;
+	SinglyLinkedList() { head = NULL; }
+	SinglyLinkedList(Node* n) { head = n; }
+	Node* nodeExists(l k);                                                   //0 operation team exists or not using id
+	void appendNode(Node* n);                                                //1 operation to add team
+	void app(Node* n);                                                       //2 operation to add team from file
+	void deleteNodeByKey(l k);                                               //3 operation to delete team by ID
+	void deleten(l k);                                                       //4 operation to detele team with id 0 added during reading file data
+	void displayteamlist();                                                  //5 operation to display team list
+	void displayteaminformation(l k);                                        //6 operation to display all team information
+	void displayteamplayer(l k);                                             //7 operation to display team players using id
+	void updateteamowner(l k, string o);                                     //8 operation to update team owner by ID
+	void updateteamprice(l k, long double p);                                //9 operation to update team price by ID
+	void updateteamscore(l k, int s);                                        //10 operation to update team score by ID
+	void replaceteamfranchise(l k, string repwith, string repby);            //11 operation to replaced team franchise by ID
+	void deleteteamfranchise(l k, string del);                               //12 operation to delete team franchise by ID
+	void addteamfranchise(l k, string ad);                                   //13 operation to add team franchise by ID
+	void updateteamplayers(l k, string prevplayer, string newplayer);        //14 operation to update team players
+	void updateteamname(l k, string s);                                      //15 operation to update team name by ID
+	void displayteampowner(l k);                                             //16 operation to view owner of team
+	void displayteamprice(l k);                                              //17 operation to view price of team
+	void displayteamscore(l k);                                              //18 to view score
+	void addteamplayer(l k, string ad);                                      //19 operation to add team player
+	void deleteteamplayer(l k, string del);                                  //20 operation to delete team player
+	void displayteamfranchise(l k);                                          //21 operation to view team franchise
+	void displayteamplayercount(l k);                                        //22 operation to show count of teamplayer
+	void displaymaxscore();                                                  //23 operation to display max score team
+	void detuctteamscore(l k, int s);                                        //24 operation to deduct team score by ID
+	void savedata();                                                         //25 to save team info
+	void displaymatches(l k, tournament sch);                                //26 to display team matches of specific team
+	void displaysche(tournament s);
+	~SinglyLinkedList() { delete head; }
+}; int SinglyLinkedList::count1 = 0;
+l checkid(l k);
+l checkid1(l k);
+l checkid2(l k);
+int checkmatch(int k);
+int checkn(int n);
+int checktn(int tn);
+int checkscore(int scores);
+int checkscores2(int scores);
+long double checkpr(long double price);
+long double checkpr1(long double updatepr);
+
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+	
+	char option;
+	l key;
+	string team_name;
+	team_name.erase(team_name.begin(), team_name.end());
+	string owner;
+	owner.erase(owner.begin(), owner.end());
+	long double price;
+	vector<string> franchise;
+	int scores;
+	vector<string> team_players;
+	l key1;                                                                   //required for insert team after team operation
+	string newplayer;                                                         //required for new team player name
+	string repwith, repby;                                                    //to replace franchise
+	string del;                                                               //to delete and add franchise
+	char opt;
+	char opti;
+	char opti2;
+	char opti3;
+	char opti4;
+	string x1;
+	string x2;
+	int count = 0;
+	int frcount = 0;
+	int tpcount = 0;
+	long double updatepr;
+	SinglyLinkedList s;
+	tournament schedule;
+	int time;
+	static int match_count = 0;
+	Node* temp = NULL;
+	Node* temp1 = NULL;
+	Node* temp2 = NULL;
+	int match;
+	char c;
+	string chec;
+	ifstream infile;
+	infile.open("Team.data");
+	if (!infile) {}
+	else
+	{
+		while (!infile.eof())
+		{
+			Node* nu = new Node();
+			infile >> nu->key;
+			infile >> x1;
+			nu->set_team_name(underscores2space(x1));
+			infile >> x1;
+			nu->set_owner(underscores2space(x1));
+			infile >> price;
+			nu->set_price(price);
+			infile >> frcount;
+			vector<string> f;
+			for (int i = 0; i < frcount; i++)
+			{
+				infile >> x1;
+				x1 = underscores2space(x1);
+				f.push_back(x1);
+			}
+			nu->set_fran(f);
+			
+			vector<string> t;
+			infile >> tpcount;
+			for (int i = 0; i < tpcount; i++)
+			{
+				infile >> x1;
+				x1 = underscores2space(x1);
+				t.push_back(x1);
+			}
+			nu->set_tp(t);
+			
+			infile >> scores;
+			nu->set_score(scores);
+			s.app(nu);
+			f.erase(f.begin(), f.end());
+			t.erase(t.begin(), t.end());
+		}
+		s.deleten(0);
+	}
+	infile.close();
+	ifstream ifs;
+	ifs.open("Schedule.data");
+	if (!ifs) {}
+	else
+	{
+		while (!ifs.eof())
+		{
+			ifs >> key;
+			ifs >> key1;
+			ifs >> x1;
+			ifs >> time;
+			schedule.team_id_1.push_back(key);
+			schedule.team_id_2.push_back(key1);
+			schedule.date.push_back(x1);
+			schedule.time.push_back(time);
+		}
+		int si = schedule.team_id_1.size();
+		schedule.deletem(si);
+	}
+	ifs.close();
+	do {
+		cout << endl << "Select Option Given Below:" << endl;
+		cout << "0.  Exit" << endl;
+		cout << "1.  Add Team" << endl;
+		cout << "2.  Delete Team" << endl;
+		cout << "3.  Update Team Information" << endl;
+		cout << "4.  Display Teams" << endl;
+		cout << "5.  Display Team Information" << endl;
+		cout << "6.  Display Team With Maximum Points" << endl;
+		cout << "7.  Make Tournament Schedule" << endl;
+		cout << "8.  Display Tournament Schedule" << endl;
+		cout << "9.  Clear Screen" << endl;
+		cout << "10. Save" << endl;
+		cout << "Option: ";
+		cin >> option;
+		Node* n1 = new Node();
+		switch (option)
+		{
+		case '0':
+			if (s.count1 != 0 || schedule.cont != 0)
+			{
+				cout << left << setw(50) << setfill('_') << "Do You Want To Save(Y/N) " << ":";
+				cin >> chec;
+				if (chec == "Y" || chec == "y")
+				{
+					s.savedata();
+					schedule.saverecord();
+				}
+				else if (chec == "N" || chec == "n")
+				{
+					cout << "Changes Not Saved!" << endl;
+				}
+				else
+				{
+					bool check = 1;
+					while (check)
+					{
+						cout << "Enter Valid Option!" << endl;
+						cout << left << setw(50) << setfill('_') << "Do You Want To Save(Y/N) " << ":";
+						cin >> chec;
+						if (chec == "Y" || chec == "y")
+						{
+							s.savedata();
+							schedule.saverecord();
+							check = 0;
+						}
+						else if (chec == "N" || chec == "n")
+						{
+							cout << "Changes Not Saved!" << endl;
+							check = 0;
+						}
+						else
+						{
+							continue;
+						}
+					}
+				}
+			}
+			break;
+		case '1':
+			cout << endl << "Add Team Option Called!" << endl;
+			cout << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+			cin >> key;
+			key = checkid(key);
+			temp = s.nodeExists(key);
+			if (temp != NULL)
+			{
+				cout << "Team Already Exists With ID!" << endl;
+			}
+			else
+			{
+				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				cout << left << setw(50) << setfill('_') << "Enter Team Name " << ":";
+				getline(cin, team_name);
+				cout << left << setw(50) << setfill('_') << "Enter Owner Name " << ":";
+				getline(cin, owner);
+				cout << left << setw(50) << setfill('_') << "Enter Team Price($) " << ":";
+				cin >> price;
+				price = checkpr(price);
+				int n;
+				cout << left << setw(50) << setfill('_') << "Enter No. Of Sponsorships Team Have " << ":";
+				cin >> n;
+				n = checkn(n);
+				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				franchise.erase(franchise.begin(), franchise.end());
+				for (int i = 0; i < n; i++)
+				{
+					string x;
+					if (i < 9)
+					{
+						cout << "Enter Sponsorship Name(" << i + 1 << ")  ";
+						cout << right << setw(24) << setfill('_') << ":";
+						getline(cin, x);
+					}
+					else
+					{
+						cout << "Enter Sponsorship Name(" << i + 1 << ") ";
+						cout << right << setw(24) << setfill('_') << ":";
+						getline(cin, x);
+					}
+					franchise.push_back(x);
+				}
+				int tn;
+				cout << left << setw(50) << setfill('_') << "Enter Number of Team Players " << ":";
+				cin >> tn;
+				tn = checktn(tn);
+				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				team_players.erase(team_players.begin(), team_players.end());
+				for (int i = 0; i < tn; i++)
+				{
+					string x;
+					if (i < 9)
+					{
+						cout << "Enter Player " << i + 1 << " Name ";
+						cout << right << setw(31) << setfill('_') << ":";
+						getline(cin, x);
+					}
+					else
+					{
+						cout << "Enter Player " << i + 1 << " Name ";
+						cout << right << setw(30) << setfill('_') << ":";
+						getline(cin, x);
+					}
+					team_players.push_back(x);
+				}
+				cout << left << setw(50) << setfill('_') << "Enter Team Points " << ":";
+				cin >> scores;
+				scores = checkscore(scores);
+				n1->key = key;
+				//n1->team_name = team_name;
+				n1->set_team_name(team_name);
+				//n1->owner = owner;
+				n1->set_owner(owner);
+				//n1->price = price;
+				n1->set_price(price);
+				//n1->franchise = franchise;
+				n1->set_fran(franchise);
+				//n1->team_players = team_players;
+				n1->set_tp(team_players);
+				//n1->score = scores;
+				n1->set_score(scores);
+				s.appendNode(n1);
+			}
+
+			break;
+		case '2':
+			cout << endl << "Delete Team Option Called!" << endl;
+			s.displayteamlist();
+			cout << "Enter ID of Team To Be Deleted: ";
+			cin >> key1;
+			key1 = checkid(key1);
+			cout << left << setw(50) << setfill('_') << "Do You Want To Delete(Y/N) " << ":";
+			cin >> c;
+			if (c == 'Y' || c == 'y')
+			{
+				s.deleteNodeByKey(key1);
+				schedule.eraseifteamd(key1);
+			}
+			else if (c == 'N' || c == 'n')
+			{
+				cout << "Team Not Deleted!" << endl;
+			}
+			else
+			{
+				cout << "Enter Valid Option!" << endl;
+			}
+			break;
+		case '3':
+
+			cout << endl << "Update Team Option Called!" << endl;
+			cout << "\t" << "Select Option Given Below:" << endl;
+			cout << "\t" << "1. Update Team Owner" << endl;
+			cout << "\t" << "2. Update Team Price" << endl;
+			cout << "\t" << "3. Update Team Sponsorships" << endl;
+			cout << "\t" << "4. Update Team Points" << endl;
+			cout << "\t" << "5. Update Team Players" << endl;
+			cout << "\t" << "Option: ";
+			cin >> opt;
+			switch (opt)
+			{
+			case '1':
+				cout << endl << "\t" << "Update Team Owner Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Owner Name " << ":";
+				getline(cin, x1);
+				s.updateteamowner(key1, x1);
+				break;
+			case '2':
+				cout << endl << "\t" << "Update Team Price Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Changed Price " << ":";
+				cin >> updatepr;
+				updatepr = checkpr1(updatepr);
+				s.updateteamprice(key1, updatepr);
+				break;
+			case '3':
+
+				cout << endl << "\t" << "Update Team Sponsorships Called!" << endl;
+				cout << "\t \t" << "Select Option Given Below:" << endl;
+				cout << "\t \t" << "1. Add Sponsorship" << endl;
+				cout << "\t \t" << "2. Delete Sponsorship" << endl;
+				cout << "\t \t" << "3. Replace Sponsorship" << endl;
+				cout << "\t \t" << "Option: ";
+				cin >> opti;
+
+				switch (opti)
+				{
+				case '1':
+					cout << endl << "\t \t" << "Add Sponsorship Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter New Sponsorship Name " << ":";
+					getline(cin, x1);
+					s.addteamfranchise(key1, x1);
+					break;
+				case '2':
+					cout << endl << "\t \t" << "Delete Sponsorship Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Sponsorship Name " << ":";
+					getline(cin, x1);
+					s.deleteteamfranchise(key1, x1);
+					break;
+				case '3':
+					cout << endl << "\t \t" << "Replace Sponsorship Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Sponsorship To Be Replaced " << ":";
+					getline(cin, x2);
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter New Sponsorship Name " << ":";
+					getline(cin, x1);
+					s.replaceteamfranchise(key1, x2, x1);
+					break;
+				default:
+					cout << endl << "***************Enter Valid Option!***************" << endl;
+					break;
+				}
+				break;
+			case '4':
+				cout << endl << "\t" << "Update Team Points Option Called!" << endl;
+				cout << "\t \t" << "Select Option Given Below:" << endl;
+				cout << "\t \t" << "1. Add Points" << endl;
+				cout << "\t \t" << "2. Deduct Points" << endl;
+				cout << "\t \t" << "Option: ";
+				cin >> opti3;
+				switch (opti3)
+				{
+				case '1':
+					cout << endl << "\t \t" << "Add Points Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Points To Be Added " << ":";
+					cin >> scores;
+					scores = checkscores2(scores);
+					s.updateteamscore(key1, scores);
+					break;
+				case '2':
+					cout << endl << "\t \t" << "Deduct Points Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Points To Be Deducted " << ":";
+					cin >> scores;
+					scores = checkscores2(scores);
+					s.detuctteamscore(key1, scores);
+					break;
+				default:
+					cout << endl << "***************Enter Valid Option!***************" << endl;
+				}
+				break;
+			case '5':
+				cout << endl << "\t" << "Update Team Players Option Called!" << endl;
+				cout << "\t \t" << "Select Option Given Below:" << endl;
+				cout << "\t \t" << "1. Add New Player" << endl;
+				cout << "\t \t" << "2. Delete Player" << endl;
+				cout << "\t \t" << "3. Replace Player" << endl;
+				cout << "\t \t" << "Option: ";
+				cin >> opti2;
+				switch (opti2)
+				{
+				case '1':
+					cout << endl << "\t \t" << "Add New Player Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Player Name " << ":";
+					getline(cin, x1);
+					s.addteamplayer(key1, x1);
+					break;
+				case '2':
+					cout << endl << "\t \t" << "Delete Player Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Player Name " << ":";
+					getline(cin, x1);
+					s.deleteteamplayer(key1, x1);
+					break;
+				case '3':
+					cout << endl << "\t \t" << "Replace Player Option Called!" << endl;
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+					cin >> key1;
+					key1 = checkid2(key1);
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter Player Name To Be Replaced " << ":";
+					getline(cin, x1);
+					cout << "\t \t" << left << setw(50) << setfill('_') << "Enter New Player Name " << ":";
+					getline(cin, x2);
+					s.updateteamplayers(key1, x1, x2);
+					break;
+				default:
+					cout << endl << "***************Enter Valid Option!***************" << endl;
+				}
+				break;
+			default:
+				cout << endl << "***************Enter Valid Option!***************" << endl;
+				break;
+			}
+			break;
+		case '4':
+			cout << endl << "Display Teams Option Called!" << endl;
+			s.displayteamlist();
+			break;
+		case '5':
+			char op;
+			cout << endl << "Display Team Information Operation Called!" << endl;
+			cout << "\t" << "Select Option Given Below:" << endl;
+			cout << "\t" << "1. View All Information" << endl;
+			cout << "\t" << "2. View Owner" << endl;
+			cout << "\t" << "3. View Price" << endl;
+			cout << "\t" << "4. View Sponsorships" << endl;
+			cout << "\t" << "5. View Team Players" << endl;
+			cout << "\t" << "6. View Points" << endl;
+			cout << "\t" << "7. View Number Of Players In a Team" << endl;
+			cout << "\t" << "8. View Team Matches" << endl;
+			cout << "\t" << "Option: ";
+			cin >> op;
+			switch (op)
+			{
+			case '1':
+				cout << endl << "\t" << "View All Information Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteaminformation(key1);
+				break;
+			case '2':
+				cout << endl << "\t" << "View Owner Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteampowner(key1);
+				break;
+			case '3':
+				cout << endl << "\t" << "View Price Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteamprice(key1);
+				break;
+			case '4':
+				cout << endl << "\t" << "View Sponsorships Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteamfranchise(key1);
+				break;
+			case '5':
+				cout << endl << "\t" << "View Team Playes Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteamplayer(key1);
+				break;
+			case '6':
+				cout << endl << "\t" << "View Team Points Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteamscore(key1);
+				break;
+			case '7':
+				cout << endl << "\t" << "View Number Of Players In a Team Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displayteamplayercount(key1);
+				break;
+			case '8':
+				cout << endl << "\t" << "View Team Matches Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				s.displaymatches(key1, schedule);
+				break;
+			default:
+				cout << endl << "***************Enter Valid Option!***************" << endl;
+				break;
+			}
+			break;
+		case '6':
+			cout << endl << "Display Team With Maximum Points Option Called!" << endl;
+			s.displaymaxscore();
+			break;
+		case '7':
+			cout << endl << "Make Tournament Schedule Option Called!" << endl;
+			cout << "\t" << "Select Option Given Below:" << endl;
+			cout << "\t" << "1. Make Whole Tornament Schedule" << endl;
+			cout << "\t" << "2. Add Match" << endl;
+			cout << "\t" << "3. Delete Match" << endl;
+			cout << "\t" << "4. Delete Tournament Record" << endl;
+			cout << "\t" << "Option: ";
+			cin >> opti4;
+			switch (opti4)
+			{
+			case '1':
+				cout << "\t" << "Make Whole Tornament Schedule Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Number Of Matches " << ":";
+				cin >> match;
+				schedule.emptyschedule();
+				match = checkmatch(match);
+				for (int i = 0; i < match; i++)
+				{
+					cout << endl << "\t" << "Add Match(" << i + 1 << ") Details:" << endl;
+					cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID " << ":";
+					cin >> key;
+					key = checkid1(key);
+					cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID " << ":";
+					cin >> key1;
+					key1 = checkid1(key1);
+					temp = s.nodeExists(key);
+					temp1 = s.nodeExists(key1);
+					if (temp == NULL || temp1 == NULL)
+					{
+						while (temp == NULL)
+						{
+							cout << "\t" << "Team ID Is Invalid!" << endl;
+							cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID Again" << ":";
+							cin >> key;
+							key = checkid1(key);
+							temp = s.nodeExists(key);
+						}
+						while (temp1 == NULL)
+						{
+							cout << "\t" << "Team ID Is Invalid!" << endl;
+							cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID Again" << ":";
+							cin >> key1;
+							key1 = checkid1(key1);
+							temp1 = s.nodeExists(key1);
+						}
+					}
+					if (key == key1)
+					{
+						while (key == key1)
+						{
+							cout << "\t" << "Team ID's Are Same!" << endl;
+							cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID Again" << ":";
+							cin >> key;
+							key = checkid1(key);
+							cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID Again" << ":";
+							cin >> key1;
+							key1 = checkid1(key1);
+							temp = s.nodeExists(key);
+							temp1 = s.nodeExists(key1);
+							while (temp == NULL)
+							{
+								cout << "\t" << "Team ID Is Invalid!" << endl;
+								cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID Again" << ":";
+								cin >> key;
+								key = checkid1(key);
+								temp = s.nodeExists(key);
+							}
+							while (temp1 == NULL)
+							{
+								cout << "\t" << "Team ID Is Invalid!" << endl;
+								cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID Again" << ":";
+								cin >> key1;
+								key1 = checkid1(key1);
+								temp1 = s.nodeExists(key1);
+							}
+						}
+					}
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t" << left << setw(50) << setfill('_') << "Enter Date Of Match(dd-mm-yyyy) " << ":";
+					cin >> x1;
+					cout << "\t" << left << setw(50) << setfill('_') << "Enter Match Time(2400 format) " << ":";
+					cin >> time;
+					schedule.date.push_back(x1);
+					schedule.time.push_back(time);
+					schedule.team_id_1.push_back(key);
+					schedule.team_id_2.push_back(key1);
+				}
+				break;
+			case '2':
+				cout << "\t" << "Add Match Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID " << ":";
+				cin >> key;
+				key = checkid1(key);
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID " << ":";
+				cin >> key1;
+				key1 = checkid1(key1);
+				temp = s.nodeExists(key);
+				temp1 = s.nodeExists(key1);
+				/*if (temp == NULL || temp1 == NULL)
+				{
+					while (temp == NULL)
+					{
+						cout << "\t" << "Team ID Is Invalid!" << endl;
+						cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID Again" << ":";
+						cin >> key;
+						key = checkid1(key);
+						temp = s.nodeExists(key);
+					}
+					while (temp1 == NULL)
+					{
+						cout << "\t" << "Team ID Is Invalid!" << endl;
+						cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID Again" << ":";
+						cin >> key1;
+						key1 = checkid1(key1);
+						temp1 = s.nodeExists(key1);
+					}
+				}
+				if (key == key1)
+				{
+					while (key == key1)
+					{
+						cout << "\t" << "Team ID's Are Same!" << endl;
+						cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID Again" << ":";
+						cin >> key;
+						key = checkid1(key);
+						cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID Again" << ":";
+						cin >> key1;
+						key1 = checkid1(key1);
+						temp = s.nodeExists(key);
+						temp1 = s.nodeExists(key1);
+						while (temp == NULL)
+						{
+							cout << "\t" << "Team ID Is Invalid!" << endl;
+							cout << "\t" << left << setw(50) << setfill('_') << "Enter First Opponent Team ID Again" << ":";
+							cin >> key;
+							key = checkid1(key);
+							temp = s.nodeExists(key);
+						}
+						while (temp1 == NULL)
+						{
+							cout << "\t" << "Team ID Is Invalid!" << endl;
+							cout << "\t" << left << setw(50) << setfill('_') << "Enter Second Opponent Team ID Again" << ":";
+							cin >> key1;
+							key1 = checkid1(key1);
+							temp1 = s.nodeExists(key1);
+						}
+					}
+				}*/
+				if (key == key1)
+				{
+					cout << "\t" << "Team ID's Are Same!" << endl;
+				}
+				else if (temp == NULL)
+				{
+					cout << "\t" << "First Opponent Team ID Is Invalid!" << endl;
+				}
+				else if (temp1 == NULL)
+				{
+					cout << "\t" << "Second Opponent Team ID Is Invalid!" << endl;
+				}
+				else
+				{
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << "\t" << left << setw(50) << setfill('_') << "Enter Date Of Match(dd-mm-yyyy) " << ":";
+					cin >> x1;
+					cout << "\t" << left << setw(50) << setfill('_') << "Enter Match Time(2400 format) " << ":";
+					cin >> time;
+					schedule.date.push_back(x1);
+					schedule.time.push_back(time);
+					schedule.team_id_1.push_back(key);
+					schedule.team_id_2.push_back(key1);
+				}
+
+				break;
+			case '3':
+				cout << "\t" << "Delete Match Option Called!" << endl;
+				cout << "\t" << left << setw(50) << setfill('_') << "Enter Match Number" << ":";
+				cin >> match;
+				if (match <= 0)
+				{
+					cout << "\t" << "Match Number Can't Be Negative!" << endl;
+				}
+				else
+				{
+					schedule.deletematch(match);
+				}
+				break;
+			case '4':
+				cout << "\t" << "Delete Tournament Record Option Called!" << endl;
+				cout << left << setw(50) << setfill('_') << "Do You Want To Delete(Y/N) " << ":";
+				cin >> c;
+				if (c == 'Y' || c == 'y')
+				{
+					schedule.emptyschedule();
+				}
+				else if (c == 'N' || c == 'n')
+				{
+					cout << "Record Not Deleted!" << endl;
+				}
+				else
+				{
+					cout << "Enter Valid Option!" << endl;
+				}
+				break;
+			default:
+				cout << endl << "***************Enter Valid Option!***************" << endl;
+				break;
+			}
+			break;
+		case '8':
+			cout << endl << "Display Tournament Schedule Option Called!" << endl;
+			//schedule.displayschedule();
+			s.displaysche(schedule);
+			break;
+		case '9':
+			system("cls");
+			break;
+		case '10':
+			char c;
+			cout << endl << "Save Option Called!" << endl;
+			cout << left << setw(50) << setfill('_') << "Do You Want To Save(Y/N) " << ":";
+			cin >> c;
+			if (c == 'Y' || c == 'y')
+			{
+				s.savedata();
+				schedule.saverecord();
+			}
+			else if (c == 'N' || c == 'n')
+			{
+				cout << "Changes Not Saved!" << endl;
+			}
+			else
+			{
+				cout << "Enter Valid Option!" << endl;
+			}
+			break;
+		default:
+			cout << endl << "***************Enter Valid Option!***************" << endl;
+			break;
+		}
+		delete n1;
+	} while (option != '0');
+	delete temp;
+	delete temp1;
+	delete temp2;
+	return 0;
+}
+l checkid(l k)
+{
+	while (k < 0)
+	{
+		cout << "ID Can't Be Negative!" << endl;
+		cout << left << setw(50) << setfill('_') << "Re-Enter Team ID " << ":";
+		cin >> k;
+	}
+	return k;
+}
+l checkid1(l k)
+{
+	while (k < 0)
+	{
+		cout << "\t" << "ID Can't Be Negative!" << endl;
+		cout << "\t" << left << setw(50) << setfill('_') << "Re-Enter Team ID " << ":";
+		cin >> k;
+	}
+	return k;
+}
+int checkmatch(int k)
+{
+	while (k < 0)
+	{
+		cout << "\t" << "Number Of Matches Can't Be Negative!" << endl;
+		cout << "\t" << left << setw(50) << setfill('_') << "Re-Enter Number Of Matches " << ":";
+		cin >> k;
+	}
+	return k;
+}
+
+l checkid2(l k)
+{
+	while (k < 0)
+	{
+		cout << "\t \t" << "ID Can't Be Negative!" << endl;
+		cout << "\t \t" << left << setw(50) << setfill('_') << "Re-Enter Team ID " << ":";
+		cin >> k;
+	}
+	return k;
+}
+int checkn(int n)
+{
+	while (n < 0)
+	{
+		cout << "Number Of Sponsorships Can't Be Negative!" << endl;
+		cout << left << setw(50) << setfill('_') << "Re-Enter No. Of Sponsorships Team Have " << ":";
+		cin >> n;
+	}
+	return n;
+}
+int checktn(int tn)
+{
+	while (tn < 0)
+	{
+		cout << "Number Of Players Can't Be Negative!" << endl;
+		cout << left << setw(50) << setfill('_') << "Re-Enter No. of Team Players " << ":";
+		cin >> tn;
+	}
+	return tn;
+}
+int checkscore(int scores)
+{
+	while (scores < 0)
+	{
+		cout << "Points Can't Be Negative!" << endl;
+		cout << left << setw(50) << setfill('_') << "Re-Enter Team Points " << ":";
+		cin >> scores;
+	}
+	return scores;
+}
+int checkscores2(int scores)
+{
+	while (scores < 0)
+	{
+		cout << "\t \t" << "Points Can't Be Negative!" << endl;
+		cout << "\t \t" << left << setw(50) << setfill('_') << "Re-Enter Points " << ":";
+		cin >> scores;
+	}
+	return scores;
+}
+long double checkpr(long double price)
+{
+	while (price < 0)
+	{
+		cout << "Price Can't Be Negative!" << endl;
+		cout << left << setw(50) << setfill('_') << "Re-Enter Team Price " << ":";
+		cin >> price;
+	}
+	return price;
+}
+long double checkpr1(long double updatepr)
+{
+	while (updatepr < 0)
+	{
+		cout << "\t" << "Price Can't Be Negative!" << endl;
+		cout << "\t" << left << setw(50) << setfill('_') << "Re-Enter Changed Price " << ":";
+		cin >> updatepr;
+	}
+	return updatepr;
+}
+Node* SinglyLinkedList::nodeExists(l k)
+{
+	Node* temp = NULL;
+	Node* ptr = head;
+	while (ptr != NULL)
+	{
+		if (ptr->key == k)
+		{
+			temp = ptr;
+		}
+		ptr = ptr->next;
+	}
+	return temp;
+}
+void SinglyLinkedList::appendNode(Node* n)
+{
+	if (nodeExists(n->key) != NULL)
+	{
+		cout << "Team Already Exists With ID: " << n->key << endl;
+		cout << "Add Team With Different ID!" << endl;
+	}
+	else
+	{
+		if (head == NULL)
+		{
+			head = n;
+			cout << "Team Added." << endl;
+			count1++;
+		}
+		else
+		{
+			Node* ptr = head;
+			while (ptr->next != NULL)
+			{
+				ptr = ptr->next;
+			}
+			ptr->next = n;
+			cout << "Team Added." << endl;
+			count1++;
+		}
+	}
+}
+void SinglyLinkedList::app(Node* n)
+{
+	if (nodeExists(n->key) != NULL) {}
+	else
+	{
+		if (head == NULL)
+		{
+			head = n;
+		}
+		else
+		{
+			Node* ptr = head;
+			while (ptr->next != NULL)
+			{
+				ptr = ptr->next;
+			}
+			ptr->next = n;
+		}
+	}
+}
+void SinglyLinkedList::deleteNodeByKey(l k) 
+{
+	if (head == NULL) 
+	{
+		cout << "Team List Already Empty!" << endl;
+	}
+	else if (head != NULL) 
+	{
+		if (head->key == k) 
+		{
+			head = head->next;
+			cout << "Team Deleted With ID: " << k << endl;
+			count1++;
+		}
+		else 
+		{
+			Node* temp = NULL;
+			Node* prevptr = head;
+			Node* currentptr = head->next;
+			while (currentptr != NULL) 
+			{
+				if (currentptr->key == k) 
+				{
+					temp = currentptr;
+					currentptr = NULL;
+				}
+				else 
+				{
+					prevptr = prevptr->next;
+					currentptr = currentptr->next;
+				}
+			}
+			if (temp != NULL) 
+			{
+				prevptr->next = temp->next;
+				delete temp;
+				cout << "Team Deleted With ID: " << k << endl;
+				count1++;
+			}
+			else 
+			{
+				cout << "Team Doesn't Exists With ID: " << k << endl;
+			}
+		}
+	}
+}
+void SinglyLinkedList::deleten(l k) 
+{
+	if (head == NULL) {}
+	else if (head != NULL) 
+	{
+		if (head->key == k) 
+		{
+			head = head->next;
+		}
+		else 
+		{
+			Node* temp = NULL;
+			Node* prevptr = head;
+			Node* currentptr = head->next;
+			while (currentptr != NULL) 
+			{
+				if (currentptr->key == k) 
+				{
+					temp = currentptr;
+					currentptr = NULL;
+				}
+				else 
+				{
+					prevptr = prevptr->next;
+					currentptr = currentptr->next;
+				}
+			}
+			if (temp != NULL) 
+			{
+				prevptr->next = temp->next;
+				delete temp;
+			}
+			else {}
+		}
+	}
+}
+void SinglyLinkedList::displayteamlist()
+{
+	if (head == NULL)
+	{
+		cout << "No Teams In The List!" << endl;
+	}
+	else
+	{
+		cout << endl << "Team List: " << endl;
+		Node* temp = head;
+		cout << "\t" << left << setw(20) << setfill('_') << "ID" << "Team Name" << endl;
+		while (temp != NULL)
+		{
+			cout << "\t" << left << setw(20) << setfill('_') << temp->key << temp->get_team_name() << endl;
+			temp = temp->next;
+		}
+	}
+}
+void SinglyLinkedList::displayteaminformation(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		cout << "Team Information:" << endl;
+		cout << "\t" << fixed << left << setw(20) << "ID";
+		cout << ":" << ptr->key << endl;
+		cout << "\t" << fixed << left << setw(20) << "Team Name";
+		cout << ":" << ptr->get_team_name() << endl;
+		cout << "\t" << fixed << left << setw(20) << "Owner";
+		cout << ":" << ptr->get_owner() << endl;
+		cout << "\t" << fixed << left << setw(20) << "Price";
+		cout << ":" << ptr->get_price() << endl;
+		cout << "\tTeam Sponsorships Are:" << endl;
+		vector<string>::iterator itr;
+		int i = 1;
+		vector<string> franchise = ptr->get_fran();
+		for (itr = franchise.begin(); itr != franchise.end(); itr++)
+		{
+			if (i <= 9)
+			{
+				cout << "\t" << left << "Sponsorship(" << i << ")" << setw(7);
+				cout << right << ":" << *itr << endl;
+			}
+			else
+			{
+				cout << "\t" << left << "Sponsorship(" << i << ")" << setw(6);
+				cout << right << ":" << *itr << endl;
+			}
+			i++;
+		}
+		cout << "\t" << fixed << left << setw(20) << "Points";
+		cout << ":" << ptr->get_score() << endl;
+		vector<string> team_players = ptr->get_tp();
+		cout << "\t" << fixed << left << setw(20) << "Number Of Players";
+		cout << ":" << team_players.size() << endl;
+	}
+}
+void SinglyLinkedList::displayteamplayer(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		vector<string> team_players = ptr->get_tp();
+		cout << "Team Players:" << endl;
+		vector<string>::iterator itr;
+		int i = 1;
+		for (itr = team_players.begin(); itr != team_players.end(); itr++)
+		{
+			cout << "\t" << setw(10) << i << setfill('_') << "";
+			cout << *itr << endl;
+			i++;
+		}
+	}
+}
+void SinglyLinkedList::updateteamowner(l k, string o)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		ptr->set_owner(o);
+		cout << "Team Owner Updated Sucessfully" << endl;
+		count1++;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::updateteamprice(l k, long double p)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		ptr->set_price(p);
+		cout << "Team Price Updated Sucessfully" << endl;
+		count1++;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::updateteamscore(l k, int s)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		ptr->set_score(s);
+		cout << "Team Points Updated Sucessfully" << endl;
+		count1++;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::replaceteamfranchise(l k, string repwith, string repby)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		vector<string> franchise = ptr->get_fran();
+		vector<string>::iterator itr = find(franchise.begin(), franchise.end(), repwith);
+		if (itr != franchise.end())
+		{
+			*itr = repby;
+			cout << "Sponsorship Replaced Successfully." << endl;
+			ptr->set_fran(franchise);
+			count1++;
+		}
+		else
+		{
+			cout << "Enter Valid Sponsorship Name." << endl;
+		}
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::deleteteamfranchise(l k, string del)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		vector<string> franchise = ptr->get_fran();
+		vector<string>::iterator itr = find(franchise.begin(), franchise.end(), del);
+		if (itr != franchise.end())
+		{
+			franchise.erase(itr);
+			cout << "Sponsorship Deleted Successfully." << endl;
+			ptr->set_fran(franchise);
+			count1++;
+		}
+		else
+			cout << "Enter Valid Sponsorship Name." << endl;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::addteamfranchise(l k, string ad)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		vector<string> franchise = ptr->get_fran();
+		franchise.push_back(ad);
+		ptr->set_fran(franchise);
+		cout << "Team Sponsorship Added Successfully" << endl;
+		count1++;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::updateteamplayers(l k, string prevplayer, string newplayer)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		vector<string> team_players = ptr->get_tp();
+		vector<string>::iterator itr = find(team_players.begin(), team_players.end(), prevplayer);
+		if (itr != team_players.end())
+		{
+			*itr = newplayer;
+			cout << "Team Player Updated Successfully" << endl;
+			ptr->set_tp(team_players);
+			count1++;
+		}
+		else
+		{
+			cout << "Enter Valid Position." << endl;
+		}
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::updateteamname(l k, string s)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		ptr->set_team_name(s);
+		cout << "Team Name Updated Sucessfully" << endl;
+		count1++;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::displayteampowner(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		cout << "Team Owner: " << ptr->get_owner() << endl;
+	}
+}
+void SinglyLinkedList::displayteamprice(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		cout << "Team Price: " << ptr->get_price() << endl;
+	}
+}
+void SinglyLinkedList::displayteamscore(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		cout << "Team Points: " << ptr->get_score() << endl;
+	}
+}
+void SinglyLinkedList::addteamplayer(l k, string ad)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		vector<string> team_players = ptr->get_tp();
+		team_players.push_back(ad);
+		ptr->set_tp(team_players);
+		cout << "Team PLayer Added Successfully" << endl;
+		count1++;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::deleteteamplayer(l k, string del)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		vector<string> team_players = ptr->get_tp();
+		vector<string>::iterator itr = find(team_players.begin(), team_players.end(), del);
+		if (itr != team_players.end())
+		{
+			team_players.erase(itr);
+			cout << "Team Player Deleted Successfully." << endl;
+			ptr->set_tp(team_players);
+			count1++;
+		}
+		else
+			cout << "Enter Valid Player Name." << endl;
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::displayteamfranchise(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		vector<string> franchise = ptr->get_fran();
+		cout << "Total Sponsorships: " << franchise.size() << endl;
+		cout << "\tTeam Sponsorships Are:" << endl;
+		
+		vector<string>::iterator itr;
+		int i = 1;
+		for (itr = franchise.begin(); itr != franchise.end(); itr++)
+		{
+			cout << "\tSponsorship(" << i << "): " << *itr << endl;
+			i++;
+		}
+	}
+}
+void SinglyLinkedList::displayteamplayercount(l k)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		vector<string> team_players = ptr->get_tp();
+		cout << "Players in Team: " << team_players.size() << endl;
+	}
+}
+void SinglyLinkedList::displaymaxscore()
+{
+	if (head == NULL)
+	{
+		cout << "No Teams In The List!" << endl;
+	}
+	else
+	{
+		int m = 0;
+		cout << endl << "Team With Maximum Points: " << endl;
+		Node* temp = head;
+		while (temp != NULL)
+		{
+			m = max(m, temp->get_score());
+			temp = temp->next;
+		}
+		Node* tem = head;
+		while (tem != NULL)
+		{
+			if (m == tem->get_score())
+			{
+				cout << "Team Name : " << tem->get_team_name() << endl;
+				cout << "Score     : " << tem->get_score() << endl;
+			}
+			tem = tem->next;
+		}
+	}
+}
+void SinglyLinkedList::detuctteamscore(l k, int s)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr != NULL)
+	{
+		if (s < ptr->get_score())
+		{
+			ptr->set_score(-s);
+			cout << "Team Points Updated Sucessfully" << endl;
+			count1++;
+		}
+		else
+		{
+			ptr->set_score(0);
+			cout << "Team Points Updated Sucessfully" << endl;
+			count1++;
+		}
+	}
+	else
+	{
+		cout << "Team Doesn't Exist With ID: " << k << endl;
+	}
+}
+void SinglyLinkedList::savedata()
+{
+	if (head == NULL)
+	{
+		cout << "Changes Saved!" << endl;
+		ofstream outfile;
+		outfile.open("Team.data", ios::trunc);
+		outfile << 0 << endl;
+		outfile.close();
+	}
+	else
+	{
+		int count = 0;
+		ofstream outfile;
+		outfile.open("Team.data", ios::trunc);
+
+		Node* tem = head;
+		while (tem != NULL)
+		{
+			outfile << tem->key << endl;
+			outfile << space2underscore(tem->get_team_name()) << endl;
+			outfile << space2underscore(tem->get_owner()) << endl;
+			outfile << tem->get_price() << endl;
+			vector<string> franchise = tem->get_fran();
+			outfile << franchise.size() << endl;
+			for (int i = 0; i < franchise.size(); i++)
+			{
+				outfile << space2underscore(franchise[i]) << endl;
+			}
+			vector<string> team_players = tem->get_tp();
+			outfile << team_players.size() << endl;
+			for (int i = 0; i < team_players.size(); i++)
+			{
+				outfile << space2underscore(team_players[i]) << endl;
+			}
+			outfile << tem->get_score() << endl;
+			tem = tem->next;
+		}
+		cout << "Changes Saved!" << endl;
+	}
+}
+string space2underscore(string text)
+{
+	int length = text.size();
+	int x = 0;
+	string fixed;
+	while (x != length) {
+		string letter = text.substr(x, 1);
+		if (letter == " ") {
+			letter = "_";
+		}
+		fixed = fixed + letter;
+		x = x + 1;
+	}
+	return fixed;
+}
+string underscores2space(string text)
+{
+	int length = text.size();
+	int x = 0;
+	string fixed;
+	while (x != length) {
+		string letter = text.substr(x, 1);
+		if (letter == "_") {
+			letter = " ";
+		}
+		fixed = fixed + letter;
+		x = x + 1;
+	}
+	return fixed;
+}
+/*void tournament::displayschedule()
+{
+	int size = team_id_1.size();
+	if (size > 0)
+	{
+		cout << endl;
+		cout << left << setw(20) << setfill(' ') << "Match Number:"
+			<< left << setw(25) << setfill(' ') << "First Oponent:"
+			<< left << setw(25) << setfill(' ') << "Second Oponent:"
+			<< left << setw(20) << setfill(' ') << "Date:"
+			<< left << setw(20) << setfill(' ') << "Time:" << endl;
+		for (int i = 0; i < size; i++)
+		{
+			cout << left << setw(20) << setfill(' ') << i+1
+				<< left << setw(25) << setfill(' ') << team_id_1[i]
+				<< left << setw(25) << setfill(' ') << team_id_2[i]
+				<< left << setw(20) << setfill(' ') << date[i]
+				<< left << setw(20) << setfill(' ') << time[i] << endl;
+		}
+	}
+	else
+	{
+		cout << "No Record To Display!" << endl;
+	}
+}*/
+void tournament::deletematch(int x)
+{
+	x--;
+	int size = team_id_1.size();
+	if (size < 0)
+	{
+		cout << "Tournament Schedule Empty!" << endl;
+	}
+	else
+	{
+		if (x > size)
+		{
+			cout << "Match Number Not Valid!" << endl;
+		}
+		else
+		{
+			int i = 0, j = 0, k = 0, lt = 0;
+			vector<l>::iterator it, itr;
+			for (it = team_id_1.begin(); it != team_id_1.end(); it++)
+			{
+				if (i == x)
+				{
+					team_id_1.erase(it);
+					break;
+				}
+				i++;
+			}
+			for (itr = team_id_2.begin(); itr != team_id_2.end(); itr++)
+			{
+				if (j == x)
+				{
+					team_id_2.erase(itr);
+				}
+				j++;
+			}
+			vector<string>::iterator ij;
+			for (ij = date.begin(); ij != date.end(); ij++)
+			{
+				if (k == x)
+				{
+					date.erase(ij);
+				}
+				k++;
+			}
+			vector<int>::iterator im;
+			for (im = time.begin(); im != time.end(); im++)
+			{
+				if (lt == x)
+				{
+					time.erase(im);
+				}
+				lt++;
+			}
+			cout << "Match Deleted!" << endl;
+			cont++;
+		}
+	}
+}
+void tournament::saverecord()
+{
+	int size = team_id_1.size();
+	ofstream ofs;
+	ofs.open("Schedule.data", ios::trunc);
+	for (int i = 0; i < size; i++)
+	{
+		ofs << team_id_1[i] << endl;
+		ofs << team_id_2[i] << endl;
+		ofs << date[i] << endl;
+		ofs << time[i] << endl;
+	}
+	ofs.close();
+}
+void tournament::deletem(int x)
+{
+	x--;
+	int size = team_id_1.size();
+	int i = 0, j = 0, k = 0, lt = 0;
+	vector<l>::iterator it, itr;
+	for (it = team_id_1.begin(); it != team_id_1.end(); it++)
+	{
+		if (i == x)
+		{
+			team_id_1.erase(it);
+			break;
+		}
+		i++;
+	}
+	for (itr = team_id_2.begin(); itr != team_id_2.end(); itr++)
+	{
+		if (j == x)
+		{
+			team_id_2.erase(itr);
+		}
+		j++;
+	}
+	vector<string>::iterator ij;
+	for (ij = date.begin(); ij != date.end(); ij++)
+	{
+		if (k == x)
+		{
+			date.erase(ij);
+		}
+		k++;
+	}
+	vector<int>::iterator im;
+	for (im = time.begin(); im != time.end(); im++)
+	{
+		if (lt == x)
+		{
+			time.erase(im);
+		}
+		lt++;
+	}
+}
+void SinglyLinkedList::displaymatches(l k, tournament sch)
+{
+	Node* ptr = nodeExists(k);
+	if (ptr == NULL)
+	{
+		cout << "No Team With ID: " << k << endl;
+	}
+	else
+	{
+		cout << endl;
+		cout << fixed << left << setw(30) << setfill('_') << "ID";
+		cout << ":" << ptr->key << endl;
+		cout << fixed << left << setw(30) << setfill('_') << "Team Name";
+		cout << ":" << ptr->get_team_name() << endl << endl;
+		int size = sch.team_id_1.size();
+		if (size < 0)
+		{
+			cout << "No Record To Display!" << endl;
+		}
+		else
+		{
+			cout <<"  "<< left << setw(20) << setfill(' ') << "Match Number:"
+				<< left << setw(30) << setfill(' ') << "First Oponent:"
+				<< left << setw(30) << setfill(' ') << "Second Oponent:"
+				<< left << setw(20) << setfill(' ') << "Date:"
+				<< left << setw(15) << setfill(' ') << "Time:" << endl;
+			for (int i = 0; i < size; i++)
+			{
+				if (k == sch.team_id_1[i] || k == sch.team_id_2[i])
+				{
+					Node* temp = nodeExists(sch.team_id_1[i]);
+					Node* tem = nodeExists(sch.team_id_2[i]);
+					cout <<"  "<< left << setw(20) << setfill(' ') << i + 1
+						<< left << setw(30) << setfill(' ') << temp->get_team_name()
+						<< left << setw(30) << setfill(' ') << tem->get_team_name()
+						<< left << setw(20) << setfill(' ') << sch.date[i]
+						<< left << setw(15) << setfill(' ') << sch.time[i] << endl;
+				}
+			}
+		}
+	}
+}
+void tournament::eraseifteamd(l k)
+{
+	int size = team_id_1.size();
+	l x, y;
+	string z;
+	int t;
+	for (int i = 0; i < size; i++)
+	{
+		if (k == team_id_1[i] || k == team_id_2[i])
+		{
+			x = team_id_1[i];
+			y = team_id_2[i];
+			t = time[i];
+			z = date[i];
+			vector<l>::iterator it, itr;
+			it = find(team_id_1.begin(), team_id_1.end(), x);
+			itr = find(team_id_2.begin(), team_id_2.end(), y);
+			vector<string>::iterator ij;
+			vector<int>::iterator im;
+			ij = find(date.begin(), date.end(), z);
+			im = find(time.begin(), time.end(), t);
+			team_id_1.erase(it);
+			team_id_2.erase(itr);
+			date.erase(ij);
+			time.erase(im);
+		}
+	}
+}
+void SinglyLinkedList::displaysche(tournament s)
+{
+	int size = s.team_id_1.size();
+	if (size > 0)
+	{
+		cout << endl;
+		cout <<"  "<< left << setw(20) << setfill(' ') << "Match Number:"
+			<< left << setw(30) << setfill(' ') << "First Oponent:"
+			<< left << setw(30) << setfill(' ') << "Second Oponent:"
+			<< left << setw(20) << setfill(' ') << "Date:"
+			<< left << setw(15) << setfill(' ') << "Time:" << endl;
+		for (int i = 0; i < size; i++)
+		{
+			Node* ptr = nodeExists(s.team_id_1[i]);
+			Node* ptr1 = nodeExists(s.team_id_2[i]);
+			cout <<"  "<< left << setw(20) << setfill(' ') << i + 1
+				<< left << setw(30) << setfill(' ') << ptr->get_team_name()
+				<< left << setw(30) << setfill(' ') << ptr1->get_team_name()
+				<< left << setw(20) << setfill(' ') << s.date[i]
+				<< left << setw(15) << setfill(' ') << s.time[i] << endl;
+		}
+	}
+	else
+	{
+		cout << "No Record To Display!" << endl;
+	}
+}
